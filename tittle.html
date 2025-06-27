@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <title>SDGs 教育遊戲</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(45deg, #fbc2eb, #a6c1ee);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    #intro {
+      animation: fadeInUp 1.5s ease;
+    }
+
+    h1 {
+      font-size: 3.2rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+      animation: floatText 3s ease-in-out infinite;
+    }
+
+    p {
+      font-size: 1.3rem;
+      margin-bottom: 40px;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+      animation: fadeIn 2s ease;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 15px 45px;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      animation: pulse 2s infinite;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #43a047;
+      transform: scale(1.05);
+    }
+
+    /* --- Animations --- */
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatText {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgm" src="music/backmusic.mp3" autoplay loop></audio>
+
+  <div id="intro">
+    <h1>SDGs 教育遊戲</h1>
+    <p>關卡內容聚焦於永續目標2<br>來挑戰你的知識與行動力吧！</p>
+    <button onclick="startGame()">開始遊戲</button>
+  </div>
+
+  <script>
+    function startGame() {
+      window.location.href = 'game1.html';
+    }
+  </script>
+</body>
+</html>

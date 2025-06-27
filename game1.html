@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <title>第一關：清理沙灘</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background-image: url('https://doqvf81n9htmm.cloudfront.net/data/crop_article/103143/shutterstock_1418769791.jpg_1140x855.jpg');
+      background-size: cover;
+    }
+    #title {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      padding: 10px 0;
+      z-index: 999;
+    }
+    #timer {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      color: #fff;
+      font-size: 20px;
+      font-weight: bold;
+      z-index: 999;
+    }
+    .trash {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .trash:hover {
+      transform: scale(1.2);
+    }
+    #nextBtn {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background-color: #38ada9;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    #nextBtn:hover {
+      background-color: #079992;
+    }
+    #restartBtn {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background-color: #e55039;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    #restartBtn:hover {
+      background-color: #b43122;
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgm" src="music/backmusic.mp3" autoplay loop></audio>
+
+
+
+
+  <div id="title">第一關 請拯救沙灘散落的食物殘骸 時間內撿完過關</div>
+  <div id="timer">剩下時間：20</div>
+  <button id="nextBtn" onclick="location.href='game2.html'">前往第二關</button>
+  <button id="restartBtn" onclick="location.reload()">重新開始</button>
+
+  <script>
+    const totalTrash = 30;
+    let cleared = 0;
+    let timeLeft = 20;
+    let gameOver = false;
+
+    for(let i = 0; i < totalTrash; i++){
+      const trash = document.createElement('img');
+      const imgNumber = Math.floor(Math.random() * 6) + 1;
+      trash.src = `images/${imgNumber}.png`;
+      trash.className = 'trash';
+      trash.style.left = Math.random() * (window.innerWidth - 60) + 'px';
+      trash.style.top = (Math.random() * (window.innerHeight - 150) + 80) + 'px';
+      trash.onclick = function(){
+        if(!gameOver){
+          trash.remove();
+          cleared++;
+          if(cleared === totalTrash){
+            clearInterval(timer);
+            gameOver = true;
+            alert('🎉 你成功清理了所有垃圾！');
+            document.getElementById('nextBtn').style.display = 'block';
+            document.getElementById('restartBtn').style.display = 'none';
+          }
+        }
+      };
+      document.body.appendChild(trash);
+    }
+
+    const timerDisplay = document.getElementById('timer');
+    const timer = setInterval(() => {
+      timeLeft--;
+      timerDisplay.textContent = '剩下時間：' + timeLeft;
+      if(timeLeft <= 0){
+        clearInterval(timer);
+        gameOver = true;
+        if(cleared < totalTrash){
+          alert('⏰ 時間到！你沒清理完所有垃圾！');
+          // 顯示重新開始按鈕，隱藏下一關按鈕
+          document.getElementById('restartBtn').style.display = 'block';
+          document.getElementById('nextBtn').style.display = 'none';
+        }
+      }
+    }, 1000);
+  </script>
+
+</body>
+</html>

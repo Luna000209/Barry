@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>第三關 請拯救天上的楊桃 60分過關</title>
+<style>
+  body { margin: 0; background: linear-gradient(#d0f4f7, #ffffff); overflow: hidden; }
+  canvas { display: block; margin: 0 auto; background: #a3d7ff; }
+  #msgBox {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(255,255,255,0.9); padding: 20px; border-radius: 10px; display: none;
+    font-size: 20px; text-align: center;
+  }
+  button, .button {
+    margin-top: 10px; padding: 8px 16px; font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #000;
+    background-color: #ddd;
+    border: none;
+    border-radius: 5px;
+    display: inline-block;
+  }
+  #infoText {
+    position: fixed;
+    top: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    user-select: none;
+    z-index: 1000;
+  }
+</style>
+</head>
+<body>
+  <audio id="bgm" src="music/backmusic.mp3" autoplay loop></audio>
+
+
+<div id="infoText">點擊空白鍵跳躍去吃蘋果</div>
+
+<canvas id="gameCanvas" width="800" height="400"></canvas>
+
+<div id="msgBox">
+  <div id="msgText"></div>
+  <button id="restartBtn" onclick="location.reload()">重新開始</button>
+  <a id="nextLevelBtn" href="game4.html" class="button" style="display:none;">進入下一關</a>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+let player = { x:50, y:300, vy:0, width:20, height:20, onGround:false };
+let gravity = 0.6;
+let jumpPower = -11;
+let obstacles = []; // SDG5/6 柱子
+let flyingBlocks = []; // SDG2 方塊 (用圖片代替)
+let score = 0;
+let gameOver = false;
+let speed = 20;  // 遊戲速度（請注意這裡有改成20）
+
+// 載入SDG2圖片
+const sdg2Img = new Image();
+sdg2Img.src = 'images/6.png'; // 確認你的路徑和圖片名稱
+
+function spawnObstacle() {
+  obstacles.push({ x:800, y:360, width:20, height:40 });
+}
+
+function spawnFlyingBlock() {
+  // Y 座標調低，讓玩家跳得到
+  flyingBlocks.push({ x:800, y:280, width:60, height:60, collected:false });
+}
+
+setInterval(spawnObstacle, 2000);
+setInterval(spawnFlyingBlock, 3000);
+
+function drawPlayer() {
+  ctx.fillStyle = "red";
+  ctx.beginPath();
+  ctx.arc(player.x + player.width/2, player.y + player.height/2, player.width/2, 0, Math.PI*2);
+  ctx.fill();
+}
+
+function drawObstacles() {
+  ctx.fillStyle = "green";
+  obstacles.forEach(o => {
+    ctx.fillRect(o.x, o.y, o.width, o.height);
+    ctx.fillStyle = "white";
+    ctx.font = "12px Arial";
+    ctx.fillText("SDG5\nSDG6", o.x - 5, o.y + 15);
+    ctx.fillStyle = "green";
+  });
+}
+
+function drawFlyingBlocks() {
+  flyingBlocks.forEach(f => {
+    if(!f.collected){
+      ctx.drawImage(sdg2Img, f.x, f.y, f.width, f.height); // 畫出SDG2圖片
+      ctx.fillStyle = "black";
+      ctx.font = "12px Arial";
+      ctx.fillText("SDG2", f.x + 5, f.y + f.height + 12); // 在圖片下方顯示"SDG2"
+    }
+  });
+}
+
+function drawScore() {
+  ctx.fillStyle = "black";
+  ctx.font = "20px Arial";
+  ctx.fillText("分數: " + score, 10, 30);
+}
+
+function showMessage(text, showNextLevel = false) {
+  document.getElementById('msgText').innerText = text;
+  document.getElementById('msgBox').style.display = 'block';
+  document.getElementById('restartBtn').style.display = showNextLevel ? 'none' : 'inline-block';
+  const nextBtn = document.getElementById('nextLevelBtn');
+  if(showNextLevel){
+    nextBtn.style.display = 'inline-block';
+  } else {
+    nextBtn.style.display = 'none';
+  }
+}
+
+function update() {
+  if (gameOver) return;
+
+  player.vy += gravity;
+  player.y += player.vy;
+
+  if (player.y > 360) {
+    player.y = 360;
+    player.vy = 0;
+    player.onGround = true;
+  }
+
+  obstacles.forEach(o => {
+    o.x -= speed;
+    if (o.x + o.width > player.x && o.x < player.x + player.width &&
+        o.y + o.height > player.y && o.y < player.y + player.height) {
+      showMessage("失敗！撞柱了老哥！", false);
+      gameOver = true;
+    }
+  });
+
+  flyingBlocks.forEach(f => {
+    f.x -= speed;
+    if (!f.collected &&
+        f.x + f.width > player.x && f.x < player.x + player.width &&
+        f.y + f.height > player.y && f.y < player.y + player.height) {
+      score += 10;
+      f.collected = true;
+    }
+  });
+
+  if(score >= 60){
+    showMessage("恭喜過關！", true);
+    gameOver = true;
+  }
+
+  obstacles = obstacles.filter(o => o.x + o.width > 0);
+  flyingBlocks = flyingBlocks.filter(f => f.x + f.width > 0);
+}
+
+function draw() {
+  ctx.clearRect(0,0,800,400);
+  ctx.fillStyle = "#87CEFA";
+  ctx.fillRect(0, 0, 800, 400);
+  ctx.fillStyle = "#228B22";
+  ctx.fillRect(0, 380, 800, 20);
+
+  drawPlayer();
+  drawObstacles();
+  drawFlyingBlocks();
+  drawScore();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && player.onGround) {
+    player.vy = jumpPower;
+    player.onGround = false;
+  }
+});
+
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+
+</body>
+</html>

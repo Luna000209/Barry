@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>第二關：SDG2 問答遊戲</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(to right, #f7d794, #f8a5c2);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #quiz-container {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 500px;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    button, a.button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      background: #f6b93b;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover, a.button:hover {
+      background: #e58e26;
+    }
+    #score {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgm" src="music/backmusic.mp3" autoplay loop></audio>
+
+
+  <div id="quiz-container">
+    <h2>第二關 SDG2消除飢餓小測驗 60分過關</h2>
+    <div id="question"></div>
+    <div id="options"></div>
+    <div id="result" style="display:none;">
+      <h3 id="resultText"></h3>
+      <a id="nextButton" class="button" href="game3.html" style="display:none;">前往下一關</a>
+      <button id="retryButton" onclick="restartGame()" style="display:none;">重新挑戰</button>
+    </div>
+    <p id="score">分數：0</p>
+  </div>
+
+  <script>
+    const quiz = [
+      {
+        q: "1. SDG2的主要目標是什麼？",
+        options: [
+          {text: "消除飢餓", correct: true},
+          {text: "保護海洋", correct: false},
+          {text: "性別平等", correct: false},
+          {text: "發展能源", correct: false}
+        ]
+      },
+      {
+        q: "2. 全世界大約有多少人面臨糧食不足？",
+        options: [
+          {text: "8億人", correct: true},
+          {text: "500萬人", correct: false},
+          {text: "1億人", correct: false},
+          {text: "2億人", correct: false}
+        ]
+      },
+      {
+        q: "3. 以下哪一項是解決飢餓的方法？",
+        options: [
+          {text: "改善農業技術", correct: true},
+          {text: "減少糧食生產", correct: false},
+          {text: "浪費食物", correct: false},
+          {text: "停止農作", correct: false}
+        ]
+      },
+      {
+        q: "4. SDG2屬於哪一項可持續發展目標？",
+        options: [
+          {text: "第2項", correct: true},
+          {text: "第5項", correct: false},
+          {text: "第10項", correct: false},
+          {text: "第15項", correct: false}
+        ]
+      },
+      {
+        q: "5. 以下何者與糧食安全最有關？",
+        options: [
+          {text: "飢餓人口減少", correct: true},
+          {text: "能源消耗增加", correct: false},
+          {text: "森林砍伐", correct: false},
+          {text: "水資源浪費", correct: false}
+        ]
+      }
+    ];
+
+    let score = 0;
+    let current = 0;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function showQuestion() {
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('question').innerText = quiz[current].q;
+      const options = [...quiz[current].options];
+      shuffle(options);
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = '';
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.innerText = opt.text;
+        btn.onclick = () => nextQuestion(opt.correct);
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function nextQuestion(isCorrect){
+      if(isCorrect) score += 20;
+      document.getElementById('score').innerText = '分數：' + score;
+      current++;
+      if(current < quiz.length){
+        showQuestion();
+      } else {
+        document.getElementById('question').innerHTML = '';
+        document.getElementById('options').innerHTML = '';
+        document.getElementById('result').style.display = 'block';
+        if(score >= 60){
+          document.getElementById('resultText').innerText = '🎉 恭喜！你通過了SDG2測驗！';
+          document.getElementById('nextButton').style.display = 'block';
+        } else {
+          document.getElementById('resultText').innerText = '未達60分，請再接再厲！';
+          document.getElementById('retryButton').style.display = 'block';
+        }
+      }
+    }
+
+    function restartGame(){
+      score = 0;
+      current = 0;
+      document.getElementById('score').innerText = '分數：0';
+      showQuestion();
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>

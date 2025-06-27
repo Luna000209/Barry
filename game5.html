@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>SDGs 第五關：打水果遊戲</title>
+<style>
+  body { text-align: center; background: linear-gradient(#e0f7fa, #80deea); }
+  h2 { margin-top: 20px; }
+  #game {
+    width: 500px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(5, 100px); gap: 5px;
+  }
+  .hole {
+    width: 100px; height: 100px; background: #ccc; border-radius: 10px;
+    position: relative; cursor: pointer;
+  }
+  .mole {
+    width: 80px; height: 80px; position: absolute; top: 10px; left: 10px;
+    display: none;
+  }
+  #msgBox {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(255,255,255,0.9); padding: 20px; border-radius: 10px; display: none;
+  }
+</style>
+</head>
+<body>
+  <iframe src="music.html" allow="autoplay" style="display:none"></iframe>
+
+
+<h2>第五關 拯救水果 </h2>
+<p>點擊水果得10分，30秒內達100分過關！</p>
+<p>分數：<span id="score">0</span>｜剩餘時間：<span id="time">30</span>秒</p>
+
+<div id="game">
+  <!-- 25個洞 -->
+  <!-- JS會自動生成 -->
+</div>
+
+<div id="msgBox"></div>
+
+<script>
+const game = document.getElementById('game');
+const scoreEl = document.getElementById('score');
+const timeEl = document.getElementById('time');
+const msgBox = document.getElementById('msgBox');
+
+let score = 0;
+let time = 50;
+let gameOver = false;
+
+// 生成25個洞
+for(let i=0; i<25; i++){
+  const hole = document.createElement('div');
+  hole.classList.add('hole');
+  const mole = document.createElement('img');
+  mole.classList.add('mole');
+  hole.appendChild(mole);
+  game.appendChild(hole);
+}
+
+const holes = document.querySelectorAll('.hole');
+
+function randomHole() {
+  return holes[Math.floor(Math.random() * holes.length)];
+}
+
+function randomFruit() {
+  const fruits = ['fruit1.png', 'fruit2.png', 'fruit3.png'];
+  return fruits[Math.floor(Math.random() * fruits.length)];
+}
+
+function showMole() {
+  if(gameOver) return;
+  const hole = randomHole();
+  const mole = hole.querySelector('.mole');
+  mole.src = 'images/' + randomFruit();
+  mole.style.display = 'block';
+
+  mole.onclick = () => {
+    if (!gameOver) {
+      score += 10;
+      scoreEl.textContent = score;
+      mole.style.display = 'none';
+      if(score >= 100){
+        gameOver = true;
+        msgBox.innerHTML = `<p>🎉 恭喜通關！</p><button onclick="location.href='tittle.html'">回到標題</button>`;
+        msgBox.style.display = 'block';
+      }
+    }
+  };
+
+  setTimeout(() => { mole.style.display = 'none'; }, 800);
+}
+
+let moleInterval = setInterval(showMole, 800);
+let timer = setInterval(() => {
+  time--;
+  timeEl.textContent = time;
+  if(time <= 0){
+    clearInterval(timer);
+    clearInterval(moleInterval);
+    if(score < 100){
+      gameOver = true;
+      msgBox.innerHTML = `<p>時間到！失敗！</p><button onclick="location.reload()">重新開始</button>`;
+      msgBox.style.display = 'block';
+    }
+  }
+}, 1000);
+</script>
+
+</body>
+</html>
